@@ -42,108 +42,132 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Flutter Web using the local AI API of Chrome'),
         ),
-        body: Center(
-          child: AnimatedBuilder(
-              animation: promptNotifier,
-              builder: (context, child) {
-                final options = promptNotifier.options;
-                final sessionStatus = promptNotifier.sessionStatus;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Session Status: $sessionStatus'),
-                    const SizedBox(height: 6),
-                    if (options != null)
-                      Text(
-                        'temperature: ${options.temperature}\n '
-                        'topK:${options.topK}',
+        body: AnimatedBuilder(
+            animation: promptNotifier,
+            builder: (context, child) {
+              final options = promptNotifier.options;
+              final sessionStatus = promptNotifier.sessionStatus;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Session Status: $sessionStatus'),
+                            if (options != null)
+                              Text(
+                                'Options:\n'
+                                'Temperature: ${options.temperature}\n'
+                                'topK:${options.topK}',
+                              ),
+                          ],
+                        ),
                       ),
-                    const SizedBox(height: 6),
-                    Builder(
-                      builder: (context) {
-                        final isLoading = promptNotifier.loading;
-                        final hasSession = promptNotifier.session != null;
+                      const SizedBox(height: 6),
+                      Builder(
+                        builder: (context) {
+                          final isLoading = promptNotifier.loading;
+                          final hasSession = promptNotifier.session != null;
 
-                        if (isLoading && !hasSession) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
+                          if (isLoading && !hasSession) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
 
-                        if (hasSession) {
+                          if (hasSession) {
+                            return const SizedBox.shrink();
+                          }
+
                           return Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    controller: _promptController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Write you prompt hear...',
-                                    ),
-                                    onSubmitted: (value) {
-                                      promptNotifier.promptStreming(value);
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                AnimatedBuilder(
-                                    animation: _promptController,
-                                    builder: (context, child) {
-                                      return FilledButton(
-                                        onPressed: _promptController
-                                                .text.isEmpty
-                                            ? null
-                                            : () =>
-                                                promptNotifier.promptStreming(
-                                                    _promptController.text),
-                                        child: const Text('Submit'),
-                                      );
-                                    }),
-                              ],
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: FilledButton(
+                              child: const Text('Create New Session'),
+                              onPressed: () {
+                                promptNotifier.createSession();
+                              },
                             ),
                           );
-                        }
+                        },
+                      ),
+                    ],
+                  ),
+                  Builder(builder: (context) {
+                    final isLoading = promptNotifier.loading;
+                    final hasSession = promptNotifier.session != null;
 
-                        return TextButton(
-                          child: const Text('Create new Text Session'),
-                          onPressed: () {
-                            promptNotifier.createSession();
-                          },
-                        );
-                      },
-                    ),
-                    Builder(
-                      builder: (context) {
-                        final notHasResponse =
-                            promptNotifier.aiResponse.isEmpty;
-                        final isLoading = promptNotifier.loading;
+                    if (isLoading && !hasSession) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
 
-                        if (notHasResponse && !isLoading) {
-                          return const SizedBox.shrink();
-                        }
+                    if (hasSession) {
+                      return Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: _promptController,
+                                decoration: const InputDecoration(
+                                  hintText: 'Write you prompt hear...',
+                                ),
+                                onSubmitted: (value) {
+                                  promptNotifier.promptStreming(value);
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            AnimatedBuilder(
+                                animation: _promptController,
+                                builder: (context, child) {
+                                  return FilledButton(
+                                    onPressed: _promptController.text.isEmpty
+                                        ? null
+                                        : () => promptNotifier.promptStreming(
+                                            _promptController.text),
+                                    child: const Text('Submit'),
+                                  );
+                                }),
+                          ],
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                  Builder(
+                    builder: (context) {
+                      final notHasResponse = promptNotifier.aiResponse.isEmpty;
+                      final isLoading = promptNotifier.loading;
 
-                        if (isLoading) {
-                          return const Center(
-                              child: CircularProgressIndicator());
-                        }
+                      if (notHasResponse && !isLoading) {
+                        return const SizedBox.shrink();
+                      }
 
-                        final String prompResponse = promptNotifier.aiResponse;
+                      if (isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                        return Align(
-                          alignment: Alignment.centerLeft,
+                      final String prompResponse = promptNotifier.aiResponse;
+
+                      return Expanded(
+                        child: Align(
+                          alignment: Alignment.topLeft,
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
                             child: SingleChildScrollView(
                               child: SelectableText(prompResponse),
                             ),
                           ),
-                        );
-                      },
-                    ),
-                  ],
-                );
-              }),
-        ),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            }),
       ),
     );
   }
