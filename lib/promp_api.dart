@@ -54,6 +54,6 @@ extension type ReadableStreamReader(JSAny _) {
 @JS()
 @staticInterop
 extension type ReadResult(JSAny _) implements JSAny {
-  external bool get done;
+  external JSBoolean done;
   external JSAny get value;
 }

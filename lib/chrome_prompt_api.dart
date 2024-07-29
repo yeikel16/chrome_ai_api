@@ -1,6 +1,4 @@
-import 'dart:convert';
 import 'dart:js_interop';
-import 'dart:typed_data';
 import 'package:chrome_prompt_api/models/ai_text_session.dart';
 import 'package:chrome_prompt_api/promp_api.dart' as api;
 
@@ -37,15 +35,16 @@ class ChromePromptApi {
   }
 }
 
-Stream<String> _readStream(api.ReadableStream stream) async* {
+Stream<dynamic> _readStream(api.ReadableStream stream) async* {
   api.ReadableStreamReader reader = stream.getReader();
   try {
     while (true) {
       api.ReadResult result = await reader.read().toDart;
-      if (result.done) {
+
+      if (result.done.toDart) {
         break;
       }
-      yield utf8.decode((result.value as Uint8List).toList());
+      yield result.value;
     }
   } finally {
     reader.releaseLock();

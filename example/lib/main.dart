@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _promptController.dispose();
+    promptNotifier.dispose();
     super.dispose();
   }
 
@@ -80,7 +81,7 @@ class _MyAppState extends State<MyApp> {
                                       hintText: 'Write you prompt hear...',
                                     ),
                                     onSubmitted: (value) {
-                                      promptNotifier.prompt(value);
+                                      promptNotifier.promptStreming(value);
                                     },
                                   ),
                                 ),
@@ -92,8 +93,9 @@ class _MyAppState extends State<MyApp> {
                                         onPressed: _promptController
                                                 .text.isEmpty
                                             ? null
-                                            : () => promptNotifier
-                                                .prompt(_promptController.text),
+                                            : () =>
+                                                promptNotifier.promptStreming(
+                                                    _promptController.text),
                                         child: const Text('Submit'),
                                       );
                                     }),
@@ -114,12 +116,11 @@ class _MyAppState extends State<MyApp> {
                       builder: (context) {
                         final notHasResponse =
                             promptNotifier.aiResponse.isEmpty;
+                        final isLoading = promptNotifier.loading;
 
-                        if (notHasResponse) {
+                        if (notHasResponse && !isLoading) {
                           return const SizedBox.shrink();
                         }
-
-                        final isLoading = promptNotifier.loading;
 
                         if (isLoading) {
                           return const Center(
@@ -128,9 +129,14 @@ class _MyAppState extends State<MyApp> {
 
                         final String prompResponse = promptNotifier.aiResponse;
 
-                        return Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Center(child: Text(prompResponse)),
+                        return Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SingleChildScrollView(
+                              child: SelectableText(prompResponse),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -152,13 +158,20 @@ class PromptNotifier extends ChangeNotifier {
     this.sessionStatus = 'Unknown',
   });
 
+  final _chromePromptApiPlugin = ChromePromptApi();
+
   bool loading = false;
   AITextSessionOptions? options;
   AITextSession? session;
   String aiResponse = '';
   String sessionStatus;
+  StreamSubscription<dynamic>? _promptSubscription;
 
-  final _chromePromptApiPlugin = ChromePromptApi();
+  @override
+  void dispose() {
+    _promptSubscription?.cancel();
+    super.dispose();
+  }
 
   Future<void> getOptionsAndCheckStatus() async {
     loading = true;
@@ -193,11 +206,32 @@ class PromptNotifier extends ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    print('prompt(session: $session): $text');
     aiResponse = await session?.prompt(text) ?? '';
-    print('aiResponse: $aiResponse');
 
     loading = false;
     notifyListeners();
+  }
+
+  Future<void> promptStreming(String text) async {
+    loading = true;
+    notifyListeners();
+
+    final response = session?.promptStreaming(text);
+    aiResponse = '';
+    int? previousLength;
+
+    if (response != null) {
+      _promptSubscription = response.listen((aiStream) {
+        if (aiStream is String) {
+          final newContent = aiStream.substring(previousLength ?? 0);
+
+          aiResponse += newContent;
+          previousLength = aiResponse.length;
+
+          loading = false;
+          notifyListeners();
+        }
+      });
+    }
   }
 }
