@@ -68,30 +68,14 @@ class _MyAppState extends State<MyApp> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Builder(
-                        builder: (context) {
-                          final isLoading = promptNotifier.loading;
-                          final hasSession = promptNotifier.session != null;
-
-                          if (isLoading && !hasSession) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-
-                          if (hasSession) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: FilledButton(
-                              child: const Text('Create New Session'),
-                              onPressed: () {
-                                promptNotifier.createSession();
-                              },
-                            ),
-                          );
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: FilledButton(
+                          child: const Text('Create New Session'),
+                          onPressed: () {
+                            promptNotifier.createSession();
+                          },
+                        ),
                       ),
                     ],
                   ),
@@ -217,6 +201,7 @@ class PromptNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
+      aiResponse = '';
       session = await _chromePromptApiPlugin.createTextSession();
     } on PlatformException {
       sessionStatus = 'Failed to create session.';
