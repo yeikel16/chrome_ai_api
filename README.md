@@ -12,16 +12,18 @@ Allow connect Flutter Web to using the local Gemini API of Chrome by making use 
 
 ## Install
 
-1. Add the following lines to your project dependencies
+Add the following lines to your project dependencies
 
-    ```yaml
-    chrome_prompt_api:
-        git: https://github.com/yeikel16/chrome_prompt_api.git
-    ```
+ ```yaml
+ chrome_prompt_api:
+     git: https://github.com/yeikel16/chrome_prompt_api.git
+ ```
 
-    > Run `flutter pub get`
+> Run `flutter pub get`
 
-2. Make sure than you have install [Chrome Canary][chrome_canary_link] in you machine and complate every steps from [Built-in AI Early Preview Program][chrome_prompt_guide_link] setup guide.
+## Quick Test
+
+1. Make sure than you have install [Chrome Canary][chrome_canary_link] in you machine and complate every steps from [Built-in AI Early Preview Program][chrome_prompt_guide_link] setup guide.
 
     The session status be one of the following:
 
@@ -32,7 +34,7 @@ Allow connect Flutter Web to using the local Gemini API of Chrome by making use 
 
     > Since the Gemeni API currently has no way of knowing the download progress ([issue #4][issue_4]) of the model, you will have to monitor your network activity. The model weighs around 1.37 GB.
 
-3. Run example:
+2. Run example:
     **Option A:** The easy wahy is copy the URL after run the example project into [Chrome Canary][chrome_canary_link]y version. The normal version of Chrome not work beacause the Gemini API is only aviable in Chrome Dev channel (or [Canary][chrome_canary_link] channel).
     **Option B:**  [Compile the example][app-for-release] and launch a web server (for example, `python -m http.server 8000`, or by using the **dhttpd** package), and open the `/build/web` directory and opem `localhost:8000` in your [Chrome Canary][chrome_canary_link] browser.
 
