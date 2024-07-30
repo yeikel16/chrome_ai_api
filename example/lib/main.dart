@@ -40,7 +40,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Flutter Web using the local AI API of Chrome'),
+          title: const Text('Flutter Web using the local Gemini API of Chrome'),
         ),
         body: AnimatedBuilder(
             animation: promptNotifier,
@@ -68,14 +68,18 @@ class _MyAppState extends State<MyApp> {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: FilledButton(
-                          child: const Text('Create New Session'),
-                          onPressed: () {
-                            promptNotifier.createSession();
-                          },
-                        ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: FilledButton(
+                              child: const Text('Create New Session'),
+                              onPressed: () {
+                                promptNotifier.createSession();
+                              },
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -202,6 +206,9 @@ class PromptNotifier extends ChangeNotifier {
 
     try {
       aiResponse = '';
+      if (session != null) {
+        session?.destroy();
+      }
       session = await _chromePromptApiPlugin.createTextSession();
     } on PlatformException {
       sessionStatus = 'Failed to create session.';
