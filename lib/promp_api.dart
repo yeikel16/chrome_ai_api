@@ -5,33 +5,30 @@ library prompt_api;
 
 import 'dart:js_interop';
 
-@JS('window.ai.canCreateTextSession')
-external JSPromise<JSString> canCreateTextSession();
-
-@JS('window.ai.createTextSession')
-external JSPromise<AITextSessionJs> createTextSession();
-
-@JS('window.ai.defaultTextSessionOptions')
-external JSPromise<AITextSessionOptionsJs> defaultTextSessionOptions();
+@JS('ai')
+external Ai get ai;
 
 @JS()
-@staticInterop
-extension type AITextSessionOptionsJs(JSAny _) implements JSAny {
-  external JSNumber topK;
-  external JSNumber temperature;
+extension type Ai(JSAny _) {
+  external JSPromise<JSString> canCreateTextSession();
+  external JSPromise<AITextSessionJs> createTextSession(
+    AITextSessionOptions? options,
+  );
+  external JSPromise<AITextSessionOptions> textModelInfo();
 }
 
-// external AiJs get ai;
+@JS()
+extension type AITextSessionOptions._(JSAny _) implements JSAny {
+  external AITextSessionOptions({
+    JSNumber? topK,
+    JSNumber? temperature,
+  });
 
-// @JS('ai')
-// abstract class AiJs {
-//   external JSPromise<JSString> canCreateTextSession();
-//   external JSPromise<AITextSessionJs> createTextSession();
-//   // external JSPromise<AITextSessionOptions> defaultTextSessionOptions();
-// }
+  external JSNumber? topK;
+  external JSNumber? temperature;
+}
 
 @JS()
-@staticInterop
 extension type AITextSessionJs(JSAny _) implements JSAny {
   external JSPromise<JSString> prompt(String input);
   external ReadableStream promptStreaming(String input);
@@ -39,20 +36,17 @@ extension type AITextSessionJs(JSAny _) implements JSAny {
 }
 
 @JS()
-@staticInterop
 extension type ReadableStream(JSAny _) {
   external ReadableStreamReader getReader();
 }
 
 @JS()
-@staticInterop
 extension type ReadableStreamReader(JSAny _) {
   external JSPromise<ReadResult> read();
   external void releaseLock();
 }
 
 @JS()
-@staticInterop
 extension type ReadResult(JSAny _) implements JSAny {
   external JSBoolean done;
   external JSAny get value;

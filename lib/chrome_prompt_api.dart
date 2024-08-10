@@ -1,18 +1,28 @@
 import 'dart:js_interop';
+
 import 'package:chrome_prompt_api/models/ai_text_session.dart';
 import 'package:chrome_prompt_api/promp_api.dart' as api;
 
 export 'package:chrome_prompt_api/models/models.dart';
 
 class ChromePromptApi {
+  final _ai = api.ai;
+
   Future<String> canCreateTextSession() async {
-    final status = await api.canCreateTextSession().toDart;
+    final status = await _ai.canCreateTextSession().toDart;
 
     return status.toDart;
   }
 
-  Future<AITextSession> createTextSession() async {
-    final session = await api.createTextSession().toDart;
+  Future<AITextSession> createTextSession({
+    AITextSessionOptions? options,
+  }) async {
+    final session = await _ai
+        .createTextSession(api.AITextSessionOptions(
+          temperature: 0.8.toJS, //options?.temperature?.toJS,
+          topK: 1.toJS, //options?.topK.toJS,
+        ))
+        .toDart;
 
     return AITextSession(
       prompt: (a) async {
@@ -25,12 +35,12 @@ class ChromePromptApi {
     );
   }
 
-  Future<AITextSessionOptions> defaultTextSessionOptions() async {
-    final options = await api.defaultTextSessionOptions().toDart;
+  Future<AITextSessionOptions> textModelInfo() async {
+    final options = await _ai.textModelInfo().toDart;
 
     return AITextSessionOptions(
-      temperature: options.temperature.toDartDouble,
-      topK: options.topK.toDartInt,
+      temperature: options.temperature?.toDartDouble,
+      topK: options.topK?.toDartInt ?? 0,
     );
   }
 }

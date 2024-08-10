@@ -21,6 +21,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final promptNotifier = PromptNotifier();
   final _promptController = TextEditingController();
+  double _temperature = 0.8;
+  int _topK = 1;
 
   @override
   void initState() {
@@ -45,8 +47,8 @@ class _MyAppState extends State<MyApp> {
         body: AnimatedBuilder(
             animation: promptNotifier,
             builder: (context, child) {
-              final options = promptNotifier.options;
               final sessionStatus = promptNotifier.sessionStatus;
+              final session = promptNotifier.session;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -58,12 +60,40 @@ class _MyAppState extends State<MyApp> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Session Status: $sessionStatus'),
-                            if (options != null)
-                              Text(
-                                'Options:\n'
-                                'Temperature: ${options.temperature}\n'
-                                'topK:${options.topK}',
-                              ),
+                            Row(
+                              children: [
+                                Text('Temperature: ${_temperature.toString()}'),
+                                Slider(
+                                  value: _temperature,
+                                  max: 1,
+                                  min: 0,
+                                  divisions: 10,
+                                  label: _temperature.toString(),
+                                  onChanged: (double value) {
+                                    setState(() {
+                                      _temperature = value;
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text('topK: ${_topK.toString()}'),
+                                Slider(
+                                  value: _topK.toDouble(),
+                                  max: 100,
+                                  min: 1,
+                                  divisions: 100,
+                                  label: _topK.toString(),
+                                  onChanged: (double value) {
+                                    setState(() {
+                                      _topK = value.toInt();
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
                           ],
                         ),
                       ),
@@ -75,10 +105,30 @@ class _MyAppState extends State<MyApp> {
                             child: FilledButton(
                               child: const Text('Create New Session'),
                               onPressed: () {
-                                promptNotifier.createSession();
+                                promptNotifier.createSession(
+                                  temperature: _temperature,
+                                  topK: _topK,
+                                );
                               },
                             ),
                           ),
+                          if (session == null)
+                            const SizedBox.shrink()
+                          else
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 6),
+                              child: OutlinedButton(
+                                child: const Text('Destroy Session'),
+                                onPressed: () {
+                                  promptNotifier.destroy();
+                                  setState(() {
+                                    _topK = 1;
+                                    _temperature = 0.8;
+                                  });
+                                },
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -191,7 +241,7 @@ class PromptNotifier extends ChangeNotifier {
 
     try {
       sessionStatus = await _chromePromptApiPlugin.canCreateTextSession();
-      options = await _chromePromptApiPlugin.defaultTextSessionOptions();
+      options = await _chromePromptApiPlugin.textModelInfo();
     } on PlatformException {
       sessionStatus = 'Failed to get session status.';
     }
@@ -200,7 +250,17 @@ class PromptNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createSession() async {
+  void destroy() {
+    session?.destroy();
+    session = null;
+    loading = false;
+    notifyListeners();
+  }
+
+  Future<void> createSession({
+    required double temperature,
+    required int topK,
+  }) async {
     loading = true;
     notifyListeners();
 
@@ -209,7 +269,9 @@ class PromptNotifier extends ChangeNotifier {
       if (session != null) {
         session?.destroy();
       }
-      session = await _chromePromptApiPlugin.createTextSession();
+      session = await _chromePromptApiPlugin.createTextSession(
+        options: AITextSessionOptions(topK: topK, temperature: temperature),
+      );
     } on PlatformException {
       sessionStatus = 'Failed to create session.';
     }

@@ -12,7 +12,7 @@ class AITextSession {
 
 class AITextSessionOptions {
   final int topK;
-  final double temperature;
+  final double? temperature;
 
-  AITextSessionOptions({required this.topK, required this.temperature});
+  AITextSessionOptions({required this.topK, this.temperature});
 }
