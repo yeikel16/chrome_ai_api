@@ -21,6 +21,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final promptNotifier = PromptNotifier();
   final _promptController = TextEditingController();
+  final scrollController = ScrollController();
   double _temperature = 0.8;
   int _topK = 1;
 
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
               final session = promptNotifier.session;
 
               final supported = promptNotifier.isSupported;
-              print('supported: $supported');
+
               if (!supported) {
                 return const Center(
                   child: Text('Unsupported Ai Api feature in this browser'),
@@ -142,6 +143,46 @@ class _MyAppState extends State<MyApp> {
                       ),
                     ],
                   ),
+                  Builder(
+                    builder: (context) {
+                      final notHasResponse = promptNotifier.aiResponse.isEmpty;
+                      final isLoading = promptNotifier.loading;
+
+                      if (notHasResponse && !isLoading) {
+                        return const Expanded(child: SizedBox.shrink());
+                      }
+
+                      if (isLoading) {
+                        return const Expanded(
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+
+                      final String prompResponse = promptNotifier.aiResponse;
+
+                      if (scrollController.hasClients) {
+                        scrollController.animateTo(
+                          0.0,
+                          duration: const Duration(milliseconds: 200),
+                          curve: Curves.easeOut,
+                        );
+                      }
+
+                      return Expanded(
+                        child: Align(
+                          alignment: Alignment.topLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: SingleChildScrollView(
+                              controller: scrollController,
+                              reverse: true,
+                              child: SelectableText(prompResponse),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   Builder(builder: (context) {
                     final isLoading = promptNotifier.loading;
                     final hasSession = promptNotifier.session != null;
@@ -158,6 +199,8 @@ class _MyAppState extends State<MyApp> {
                             Expanded(
                               child: TextField(
                                 controller: _promptController,
+                                maxLines: 4,
+                                minLines: 1,
                                 decoration: const InputDecoration(
                                   hintText: 'Write you prompt hear...',
                                 ),
@@ -184,34 +227,6 @@ class _MyAppState extends State<MyApp> {
                     }
                     return const SizedBox.shrink();
                   }),
-                  Builder(
-                    builder: (context) {
-                      final notHasResponse = promptNotifier.aiResponse.isEmpty;
-                      final isLoading = promptNotifier.loading;
-
-                      if (notHasResponse && !isLoading) {
-                        return const SizedBox.shrink();
-                      }
-
-                      if (isLoading) {
-                        return const Center(child: CircularProgressIndicator());
-                      }
-
-                      final String prompResponse = promptNotifier.aiResponse;
-
-                      return Expanded(
-                        child: Align(
-                          alignment: Alignment.topLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: SingleChildScrollView(
-                              child: SelectableText(prompResponse),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
                 ],
               );
             }),
