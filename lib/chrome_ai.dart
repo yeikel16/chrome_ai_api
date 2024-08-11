@@ -1,11 +1,11 @@
 import 'dart:js_interop';
 
-import 'package:chrome_prompt_api/models/ai_text_session.dart';
-import 'package:chrome_prompt_api/promp_api.dart' as api;
+import 'package:chrome_ai_api/api_js/chrome_ai_api_js.dart' as api;
+import 'package:chrome_ai_api/models/models.dart';
 
-export 'package:chrome_prompt_api/models/models.dart';
+export 'package:chrome_ai_api/models/models.dart';
 
-class ChromePromptApi {
+class ChromeAiApi {
   final _ai = api.ai;
 
   Future<String> canCreateTextSession() async {
@@ -18,10 +18,12 @@ class ChromePromptApi {
     AITextSessionOptions? options,
   }) async {
     final session = await _ai
-        .createTextSession(api.AITextSessionOptions(
-          temperature: 0.8.toJS, //options?.temperature?.toJS,
-          topK: 1.toJS, //options?.topK.toJS,
-        ))
+        .createTextSession(
+          api.AITextSessionOptions(
+            temperature: options?.temperature?.toJS,
+            topK: options?.topK.toJS,
+          ),
+        )
         .toDart;
 
     return AITextSession(

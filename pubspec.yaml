@@ -1,4 +1,4 @@
-name: chrome_prompt_api
+name: chrome_ai_api
 description: "Allow connect Flutter Web to using the local AI API of Chrome"
 version: 0.0.1
 # homepage:
@@ -35,7 +35,7 @@ flutter:
   #   platforms:
   #     web:
   #       pluginClass: ChromePromptApi
-  #       fileName: chrome_prompt_api.dart
+  #       fileName: chrome_ai_api.dart
 
   # To add assets to your plugin package, add an assets section, like this:
   # assets:

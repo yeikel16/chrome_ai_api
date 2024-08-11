@@ -1,4 +1,4 @@
-# chrome_prompt_api
+# chrome_ai_api
 
 [![License: MIT][license_badge]][license_link]
 
@@ -15,8 +15,8 @@ Allow connect Flutter Web to using the local Gemini API of Chrome by making use 
 Add the following lines to your project dependencies
 
  ```yaml
- chrome_prompt_api:
-     git: https://github.com/yeikel16/chrome_prompt_api.git
+ chrome_ai_api:
+     git: https://github.com/yeikel16/chrome_ai_api.git
  ```
 
 > Run `flutter pub get`
@@ -41,7 +41,7 @@ Add the following lines to your project dependencies
 ## Usege
 
 ```dart
-final chromePromptApi = ChromePromptApi();
+final chromeAitApi = ChromeAiApi();
 ```
 
 You can see the full example [here][example_url].
@@ -55,9 +55,9 @@ If you want to [report a problem][github_issue_link] or would like to add a new 
 [app-for-release]: https://docs.flutter.dev/deployment/web#building-the-app-for-release
 [chrome_canary_link]: https://www.google.com/chrome/canary/
 [chrome_prompt_guide_link]: https://docs.google.com/document/d/1VG8HIyz361zGduWgNG7R_R8Xkv0OOJ8b5C9QKeCjU0c/edit#heading=h.5s2qlonhpm36
-[example_url]: https://github.com/yeikel16/chrome_prompt_api/example
+[example_url]: https://github.com/yeikel16/chrome_ai_api/example
 [js_interop]: https://dart.dev/interop/js-interop
 [issue_4]: https://github.com/explainers-by-googlers/prompt-api/issues/4
 [license_badge]: https://img.shields.io/badge/license-MIT-blue.svg
 [license_link]: https://opensource.org/licenses/MIT
-[github_issue_link]: https://github.com/yeikel16/chrome_prompt_api
+[github_issue_link]: https://github.com/yeikel16/chrome_ai_api

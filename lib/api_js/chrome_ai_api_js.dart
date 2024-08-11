@@ -1,7 +1,5 @@
-// ignore_for_file: unused_element, avoid_web_libraries_in_flutter
-
 @JS()
-library prompt_api;
+library ai;
 
 import 'dart:js_interop';
 

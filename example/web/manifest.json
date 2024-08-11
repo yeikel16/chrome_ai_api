@@ -1,11 +1,11 @@
 {
-    "name": "chrome_prompt_api_example",
-    "short_name": "chrome_prompt_api_example",
+    "name": "chrome_ai_api_example",
+    "short_name": "chrome_ai_api_example",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Demonstrates how to use the chrome_prompt_api plugin.",
+    "description": "Demonstrates how to use the chrome_ai_api plugin.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

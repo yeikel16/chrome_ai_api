@@ -1,6 +1,6 @@
-# chrome_prompt_api_example
+# chrome_ai_api_example
 
-Demonstrates how to use the chrome_prompt_api plugin.
+Demonstrates how to use the chrome_ai_api plugin.
 
 ## Getting Started
 

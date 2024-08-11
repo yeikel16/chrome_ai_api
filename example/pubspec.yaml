@@ -1,5 +1,5 @@
-name: chrome_prompt_api_example
-description: "Demonstrates how to use the chrome_prompt_api plugin."
+name: chrome_ai_api_example
+description: "Demonstrates how to use the chrome_ai_api plugin."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -17,9 +17,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  chrome_prompt_api:
+  chrome_ai_api:
     # When depending on this package from a real application you should use:
-    #   chrome_prompt_api: ^x.y.z
+    #   chrome_ai_api: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.

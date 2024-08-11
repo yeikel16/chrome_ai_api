@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:chrome_prompt_api/chrome_prompt_api.dart';
+import 'package:chrome_ai_api/chrome_ai_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -220,7 +220,7 @@ class PromptNotifier extends ChangeNotifier {
     this.sessionStatus = 'Unknown',
   });
 
-  final _chromePromptApiPlugin = ChromePromptApi();
+  final _chromePromptApiPlugin = ChromeAiApi();
 
   bool loading = false;
   AITextSessionOptions? options;
