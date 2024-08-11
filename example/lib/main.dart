@@ -49,6 +49,15 @@ class _MyAppState extends State<MyApp> {
             builder: (context, child) {
               final sessionStatus = promptNotifier.sessionStatus;
               final session = promptNotifier.session;
+
+              final supported = promptNotifier.isSupported;
+              print('supported: $supported');
+              if (!supported) {
+                return const Center(
+                  child: Text('Unsupported Ai Api feature in this browser'),
+                );
+              }
+
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -220,7 +229,7 @@ class PromptNotifier extends ChangeNotifier {
     this.sessionStatus = 'Unknown',
   });
 
-  final _chromePromptApiPlugin = ChromeAiApi();
+  final _chromeAiApiPlugin = ChromeAiApi();
 
   bool loading = false;
   AITextSessionOptions? options;
@@ -228,6 +237,8 @@ class PromptNotifier extends ChangeNotifier {
   String aiResponse = '';
   String sessionStatus;
   StreamSubscription<dynamic>? _promptSubscription;
+
+  bool get isSupported => _chromeAiApiPlugin.isSupported;
 
   @override
   void dispose() {
@@ -240,8 +251,10 @@ class PromptNotifier extends ChangeNotifier {
     notifyListeners();
 
     try {
-      sessionStatus = await _chromePromptApiPlugin.canCreateTextSession();
-      options = await _chromePromptApiPlugin.textModelInfo();
+      if (isSupported) {
+        sessionStatus = await _chromeAiApiPlugin.canCreateTextSession();
+      }
+      // options = await _chromeAiApiPlugin.textModelInfo();
     } on PlatformException {
       sessionStatus = 'Failed to get session status.';
     }
@@ -269,7 +282,7 @@ class PromptNotifier extends ChangeNotifier {
       if (session != null) {
         session?.destroy();
       }
-      session = await _chromePromptApiPlugin.createTextSession(
+      session = await _chromeAiApiPlugin.createTextSession(
         options: AITextSessionOptions(topK: topK, temperature: temperature),
       );
     } on PlatformException {

@@ -6,10 +6,21 @@ import 'package:chrome_ai_api/models/models.dart';
 export 'package:chrome_ai_api/models/models.dart';
 
 class ChromeAiApi {
-  final _ai = api.ai;
+  ChromeAiApi() {
+    try {
+      _ai = api.ai;
+    } catch (e) {
+      _ai = null;
+    }
+  }
+  api.Ai? _ai;
+
+  bool get isSupported => _ai != null;
 
   Future<String> canCreateTextSession() async {
-    final status = await _ai.canCreateTextSession().toDart;
+    if (_ai == null) throw ChromeAiException();
+
+    final status = await _ai!.canCreateTextSession().toDart;
 
     return status.toDart;
   }
@@ -17,7 +28,9 @@ class ChromeAiApi {
   Future<AITextSession> createTextSession({
     AITextSessionOptions? options,
   }) async {
-    final session = await _ai
+    if (_ai == null) throw ChromeAiException();
+
+    final session = await _ai!
         .createTextSession(
           api.AITextSessionOptions(
             temperature: options?.temperature?.toJS,
@@ -38,7 +51,9 @@ class ChromeAiApi {
   }
 
   Future<AITextSessionOptions> textModelInfo() async {
-    final options = await _ai.textModelInfo().toDart;
+    if (_ai == null) throw ChromeAiException();
+
+    final options = await _ai!.textModelInfo().toDart;
 
     return AITextSessionOptions(
       temperature: options.temperature?.toDartDouble,
@@ -61,4 +76,11 @@ Stream<dynamic> _readStream(api.ReadableStream stream) async* {
   } finally {
     reader.releaseLock();
   }
+}
+
+class ChromeAiException implements Exception {
+  ChromeAiException({
+    this.message = 'Unsupported Ai Api feature in this browser',
+  });
+  final String message;
 }

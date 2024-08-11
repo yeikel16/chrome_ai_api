@@ -35,13 +35,13 @@ Add the following lines to your project dependencies
     > Since the Gemeni API currently has no way of knowing the download progress ([issue #4][issue_4]) of the model, you will have to monitor your network activity. The model weighs around 1.37 GB.
 
 2. Run example:
-    **Option A:** The easy wahy is copy the URL after run the example project into [Chrome Canary][chrome_canary_link]y version. The normal version of Chrome not work beacause the Gemini API is only aviable in Chrome Dev channel (or [Canary][chrome_canary_link] channel).
+    **Option A:** The easy wahy is copy the URL after run the example project into [Chrome Canary][chrome_canary_link] version. The normal version of Chrome not work beacause the Gemini API is only aviable in Chrome Dev channel (or [Canary][chrome_canary_link] channel).
     **Option B:**  [Compile the example][app-for-release] and launch a web server (for example, `python -m http.server 8000`, or by using the **dhttpd** package), and open the `/build/web` directory and opem `localhost:8000` in your [Chrome Canary][chrome_canary_link] browser.
 
 ## Usege
 
 ```dart
-final chromeAitApi = ChromeAiApi();
+final chromeAiApi = ChromeAiApi();
 ```
 
 You can see the full example [here][example_url].
