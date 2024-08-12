@@ -1,6 +1,8 @@
 import 'dart:js_interop';
 
 import 'package:chrome_ai_api/api_js/chrome_ai_api_js.dart' as api;
+import 'package:chrome_ai_api/api_js/chrome_translation_api_js.dart'
+    as translation_api;
 import 'package:chrome_ai_api/models/models.dart';
 
 export 'package:chrome_ai_api/models/models.dart';
@@ -9,11 +11,14 @@ class ChromeAiApi {
   ChromeAiApi() {
     try {
       _ai = api.ai;
+      _translation = translation_api.translation;
     } catch (e) {
       _ai = null;
+      _translation = null;
     }
   }
   api.Ai? _ai;
+  translation_api.Translation? _translation;
 
   bool get isSupported => _ai != null;
 
@@ -58,6 +63,40 @@ class ChromeAiApi {
     return AITextSessionOptions(
       temperature: options.temperature?.toDartDouble,
       topK: options.topK?.toDartInt ?? 0,
+    );
+  }
+
+  Future<String> canDetectLanguage() async {
+    if (_translation == null) throw ChromeAiException();
+
+    final status = await _translation!.canDetect().toDart;
+
+    return status.toDart;
+  }
+
+  Future<LanguageDetector> createLanguageDetector() async {
+    if (_translation == null) throw ChromeAiException();
+
+    final detector = await _translation!.createDetector().toDart;
+
+    return LanguageDetector(
+      detect: (e) async {
+        final result = await detector.detect(e.toJS).toDart;
+
+        return result.toDart
+            .cast<translation_api.LanguageDetectionResult>()
+            .map(
+              (r) => LanguageDetectionResult(
+                confidence: r.confidence.toDartDouble,
+                detectedLanguage: r.detectedLanguage?.toDart,
+              ),
+            )
+            .toList();
+      },
+      ready: Future.value(), // TODO: is not implemented in JS side
+      onDownloadProgress: (event) {
+        return detector.ondownloadprogress;
+      },
     );
   }
 }
